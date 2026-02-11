@@ -108,6 +108,10 @@ $setupTasks = @(
         Description = "Creating essential directories"
     },
     @{
+        Script = ".\src\install-programs.ps1"
+        Description = "Installing essential programs"
+    },
+    @{
         Script = ".\src\install-brave-bitwarden.ps1"
         Description = "Installing Brave Browser and Bitwarden extension"
     }
