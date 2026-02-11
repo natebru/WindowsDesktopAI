@@ -1,0 +1,70 @@
+# Windows PowerShell Project .gitignore
+
+# Secrets and sensitive information - DO NOT COMMIT
+secrets/
+*.secret
+*.key
+.env
+.env.local
+.env.production
+.env.staging
+
+# Personal configuration files
+config.local.ps1
+local.ps1
+*.local.ps1
+
+# Log files
+*.log
+logs/
+*.log.*
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Windows-specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# PowerShell specific
+*.ps1xml
+*.clixml
+
+# IDE and editor files
+.vscode/
+.vs/
+*.code-workspace
+*.suo
+*.user
+*.sln.docstates
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Personal notes and documentation
+notes.md
+notes.txt
+todo.md
+todo.txt
+
+# Test results and coverage
+TestResults/
+*.trx
+*.coverage
+
+# Package outputs
+*.nupkg
+*.zip
+packages/
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
