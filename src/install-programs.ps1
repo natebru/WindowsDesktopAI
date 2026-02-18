@@ -2,21 +2,80 @@
 param(
     [switch]$SkipConfirmation,
     [switch]$Quiet,
-    [string[]]$ExcludePrograms = @()
+    [string[]]$ExcludePrograms = @(),
+    [string]$ProgramsFile = (Join-Path $PSScriptRoot "programs.yaml")
 )
 
-$programs = @(
-    @{Name = "Git"; Id = "Git.Git"; Description = "Version control system"},
-    @{Name = "PowerToys"; Id = "Microsoft.PowerToys"; Description = "Microsoft PowerToys utilities"},
-    @{Name = "Brave Browser"; Id = "Brave.Brave"; Description = "Privacy-focused web browser"},
-    @{Name = "Visual Studio Code"; Id = "Microsoft.VisualStudioCode"; Description = "Code editor"},
-    @{Name = "Obsidian"; Id = "Obsidian.Obsidian"; Description = "Note-taking application"},
-    @{Name = "Spotify"; Id = "Spotify.Spotify"; Description = "Music streaming service"},
-    @{Name = "PowerShell"; Id = "Microsoft.PowerShell"; Description = "Modern PowerShell"},
-    @{Name = "Oh My Posh"; Id = "JanDeDobbeleer.OhMyPosh"; Source = "winget"; Description = "Prompt theme engine"},
-    @{Name = "Nextcloud Desktop"; Id = "Nextcloud.NextcloudDesktop"; Description = "Cloud sync client"},
-    @{Name = "Git Credential Manager"; Id = "Git.GCM"; Description = "Git credential helper"}
-)
+function Import-ProgramsFromYaml {
+    param([string]$FilePath)
+    
+    if (-not (Test-Path $FilePath)) {
+        Write-ErrorMessage "Programs file not found: $FilePath"
+        return @()
+    }
+    
+    try {
+        # Check if powershell-yaml module is available
+        if (Get-Module -ListAvailable -Name powershell-yaml) {
+            Import-Module powershell-yaml -ErrorAction Stop
+            $yamlContent = Get-Content $FilePath -Raw
+            $data = ConvertFrom-Yaml $yamlContent
+            
+            return $data.programs | ForEach-Object {
+                $program = @{
+                    Name = $_.name
+                    Id = $_.id  
+                    Description = $_.description
+                }
+                if ($_.source) {
+                    $program.Source = $_.source
+                }
+                $program
+            }
+        } else {
+            Write-WarningMessage "powershell-yaml module not found. Install it with: Install-Module powershell-yaml"
+            Write-StatusMessage "Falling back to simple YAML parsing..."
+            
+            # Simple YAML parsing for our specific structure
+            $content = Get-Content $FilePath
+            $programs = @()
+            $currentProgram = @{}
+            
+            foreach ($line in $content) {
+                $line = $line.Trim()
+                if ($line -match "^\s*-\s*name:\s*[\"'](.+)[\"']") {
+                    if ($currentProgram.Count -gt 0) {
+                        $programs += $currentProgram
+                    }
+                    $currentProgram = @{Name = $matches[1]}
+                } elseif ($line -match "^\s*id:\s*[\"'](.+)[\"']") {
+                    $currentProgram.Id = $matches[1]
+                } elseif ($line -match "^\s*description:\s*[\"'](.+)[\"']") {  
+                    $currentProgram.Description = $matches[1]
+                } elseif ($line -match "^\s*source:\s*[\"'](.+)[\"']") {
+                    $currentProgram.Source = $matches[1]
+                }
+            }
+            
+            if ($currentProgram.Count -gt 0) {
+                $programs += $currentProgram
+            }
+            
+            return $programs
+        }
+    } catch {
+        Write-ErrorMessage "Error parsing programs file: $($_.Exception.Message)"
+        return @()
+    }
+}
+
+# Load programs from YAML file
+$programs = Import-ProgramsFromYaml -FilePath $ProgramsFile
+
+if ($programs.Count -eq 0) {
+    Write-ErrorMessage "No programs loaded. Exiting."
+    exit 1
+}
 
 function Write-StatusMessage {
     param([string]$Message)

@@ -1,0 +1,41 @@
+programs:
+  - name: "Git"
+    id: "Git.Git"
+    description: "Version control system"
+  
+  - name: "PowerToys"
+    id: "Microsoft.PowerToys"
+    description: "Microsoft PowerToys utilities"
+  
+  - name: "Brave Browser"
+    id: "Brave.Brave"
+    description: "Privacy-focused web browser"
+  
+  - name: "Visual Studio Code"
+    id: "Microsoft.VisualStudioCode"
+    description: "Code editor"
+  
+  - name: "Obsidian"
+    id: "Obsidian.Obsidian"
+    description: "Note-taking application"
+  
+  - name: "Spotify"
+    id: "Spotify.Spotify"
+    description: "Music streaming service"
+  
+  - name: "PowerShell"
+    id: "Microsoft.PowerShell"
+    description: "Modern PowerShell"
+  
+  - name: "Oh My Posh"
+    id: "JanDeDobbeleer.OhMyPosh"
+    source: "winget"
+    description: "Prompt theme engine"
+  
+  - name: "Nextcloud Desktop"
+    id: "Nextcloud.NextcloudDesktop"
+    description: "Cloud sync client"
+  
+  - name: "Git Credential Manager"
+    id: "Git.GCM"
+    description: "Git credential helper"
